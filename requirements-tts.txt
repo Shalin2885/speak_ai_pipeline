@@ -1,0 +1,27 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Speak AI Pipeline — TTS (optional)
+# Coqui TTS / XTTS v2
+#
+# ⚠  WINDOWS PREREQUISITE — READ BEFORE INSTALLING
+# Coqui TTS compiles a Cython extension (monotonic_align.core) at install
+# time and requires Microsoft C++ Build Tools 14.0+.
+#
+# Install Build Tools first (free, ~6 GB):
+#   https://visualstudio.microsoft.com/visual-cpp-build-tools/
+#   → check "Desktop development with C++"
+#
+# Then install this file:
+#   python -m pip install -r requirements-tts.txt
+#
+# ── Alternative: skip XTTS, use Edge TTS instead ─────────────────────────────
+# Edge TTS (already in requirements.txt) needs NO compilation and NO GPU.
+# It covers the synthesis stage by default. Only install this file if you
+# specifically need XTTS v2 voice cloning.
+#
+# ── Note on jsonlines conflict ────────────────────────────────────────────────
+# TTS pulls in gruut==2.2.3 which requires jsonlines~=1.2.0.
+# The core requirements.txt keeps jsonlines unpinned so pip resolves it.
+# ─────────────────────────────────────────────────────────────────────────────
+-r requirements.txt
+
+TTS>=0.22.0

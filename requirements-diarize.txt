@@ -1,0 +1,12 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Speak AI Pipeline — Speaker Diarization (optional, GPU recommended)
+# pyannote.audio, Resemblyzer, NeMo
+# Install with:  python -m pip install -r requirements-diarize.txt
+# ─────────────────────────────────────────────────────────────────────────────
+-r requirements.txt
+
+pyannote.audio>=3.1.0
+resemblyzer>=0.1.1.dev0
+# NeMo is Linux/Mac only and very large — uncomment if needed:
+# nemo_toolkit[asr]>=1.23.0
+

@@ -1,0 +1,10 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Speak AI Pipeline — ASR extras (optional, Linux/Mac only)
+# Wav2Vec2 forced alignment via Repository 2
+# Install with:  python -m pip install -r requirements-asr.txt
+# ─────────────────────────────────────────────────────────────────────────────
+-r requirements.txt
+
+# fairseq is not officially supported on Windows
+fairseq>=0.12.2
+
