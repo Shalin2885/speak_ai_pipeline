@@ -87,3 +87,4 @@ def test_generate_ems_text_custom_model():
 
     assert isinstance(result, str)
     assert len(result.strip()) > 0
+

@@ -59,3 +59,4 @@ def generate_ems_text(prompt: str, model: str | None = None) -> str:
         },
     )
     return response["message"]["content"]
+
