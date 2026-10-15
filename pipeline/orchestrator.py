@@ -255,3 +255,93 @@ class Orchestrator:
 
         return splits
 
+
+def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Speak AI Pipeline — End-to-end data preparation and speech pipeline orchestrator."
+    )
+    parser.add_argument(
+        "--stage",
+        type=str,
+        default="all",
+        choices=["all", "preprocess", "transcribe", "validate", "augment", "synthesise", "build", "split"],
+        help="Pipeline stage to execute (default: all).",
+    )
+    parser.add_argument(
+        "--asr-backend",
+        type=str,
+        default="openai-whisper",
+        choices=["openai-whisper", "hf-whisper", "wav2vec2"],
+        help="ASR engine for transcription (default: openai-whisper).",
+    )
+    parser.add_argument(
+        "--tts-engine",
+        type=str,
+        default="edge_tts",
+        choices=["edge_tts", "xtts", "bark"],
+        help="TTS engine for speech synthesis (default: edge_tts).",
+    )
+    parser.add_argument(
+        "--run-synthesis",
+        action="store_true",
+        default=False,
+        help="Include Stage 5 TTS synthesis when running the 'all' stage.",
+    )
+    parser.add_argument(
+        "--train-ratio",
+        type=float,
+        default=0.80,
+        help="Proportion of manifest allocated to train set (default: 0.80).",
+    )
+    parser.add_argument(
+        "--val-ratio",
+        type=float,
+        default=0.10,
+        help="Proportion of manifest allocated to validation set (default: 0.10).",
+    )
+    parser.add_argument(
+        "--snr-db",
+        type=float,
+        default=15.0,
+        help="Signal-to-noise ratio in dB for noise injection augmentation (default: 15.0).",
+    )
+    parser.add_argument(
+        "--max-cer",
+        type=float,
+        default=0.30,
+        help="Max CER threshold for transcript validation quarantine (default: 0.30).",
+    )
+
+    args = parser.parse_args()
+
+    orc = Orchestrator()
+
+    if args.stage == "all":
+        orc.run(
+            asr_backend=args.asr_backend,
+            tts_engine=args.tts_engine,
+            run_synthesis=args.run_synthesis,
+            train_ratio=args.train_ratio,
+            val_ratio=args.val_ratio,
+        )
+    elif args.stage == "preprocess":
+        orc.preprocess()
+    elif args.stage == "transcribe":
+        orc.transcribe(backend=args.asr_backend)
+    elif args.stage == "validate":
+        orc.validate(max_cer=args.max_cer)
+    elif args.stage == "augment":
+        orc.augment(snr_db=args.snr_db)
+    elif args.stage == "synthesise":
+        orc.synthesise(engine=args.tts_engine)
+    elif args.stage == "build":
+        orc.build()
+    elif args.stage == "split":
+        orc.split(train_ratio=args.train_ratio, val_ratio=args.val_ratio)
+
+
+if __name__ == "__main__":
+    main()
+
