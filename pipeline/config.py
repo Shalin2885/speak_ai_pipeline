@@ -97,11 +97,14 @@ class PipelineConfig:
     log_level: str = field(default_factory=lambda: _env("LOG_LEVEL", "INFO"))
 
     # ── Ollama (FREE local LLM — no API key needed) ──────────────────────────
-    ollama_host: str = field(
-        default_factory=lambda: _env("OLLAMA_HOST", "http://localhost:11434")
+    llm_provider: str = field(
+        default_factory=lambda: _env("LLM_PROVIDER", "ollama")
+    )
+    ollama_base_url: str = field(
+        default_factory=lambda: _env("OLLAMA_BASE_URL", "http://localhost:11434")
     )
     ollama_model: str = field(
-        default_factory=lambda: _env("OLLAMA_MODEL", "llama3.1:8b")
+        default_factory=lambda: _env("OLLAMA_MODEL", "gemma3:1b")
     )
 
     @property

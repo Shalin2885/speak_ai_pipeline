@@ -4,15 +4,15 @@ Adapter that wraps Repository 1's llm_ems_dialogue_generator.py and
 makes Ollama the default provider — no OpenAI or Anthropic key needed.
 
 Recommended Ollama models for this project (best → fastest):
+  - gemma3:1b     Default — lightweight, fast, ~815 MB RAM
   - llama3.1:8b   Best quality for EMS dialogue, needs ~6 GB RAM
   - mistral:7b    Good quality, slightly faster, ~5 GB RAM
-  - gemma2:9b     Excellent instruction following, ~7 GB RAM
   - llama3.2:3b   Fastest, lowest RAM (~3 GB), decent quality
   - phi3:mini     Smallest (~2 GB), good for low-end hardware
 
 Usage:
     from pipeline.llm_corpus_generator import generate_corpus
-    generate_corpus(num_utterances=200, model="llama3.1:8b")
+    generate_corpus(num_utterances=200, model="gemma3:1b")
 """
 
 from __future__ import annotations
@@ -67,7 +67,7 @@ def pull_model_if_missing(model: str) -> None:
 
 def generate_corpus(
     num_utterances: int = 200,
-    model: str = "llama3.1:8b",
+    model: str = "gemma3:1b",
     output_path: Optional[Path] = None,
     seed: int = 42,
     ems_root: Optional[Path] = None,
@@ -80,7 +80,7 @@ def generate_corpus(
     Parameters
     ----------
     num_utterances : Number of utterances to generate.
-    model          : Ollama model tag. Recommended: 'llama3.1:8b'.
+    model          : Ollama model tag. Default: 'gemma3:1b'.
     output_path    : Destination JSONL file (default: data/manifests/corpus.jsonl).
     seed           : Random seed for reproducibility.
     ems_root       : Path to ems_audio_syn_pipeline repo root. Auto-detected
@@ -147,8 +147,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate EMS corpus with Ollama (free, local).")
     parser.add_argument("--num", type=int, default=200, help="Number of utterances")
     parser.add_argument(
-        "--model", type=str, default="llama3.1:8b",
-        help="Ollama model tag (e.g. llama3.1:8b, mistral:7b, gemma2:9b, llama3.2:3b)"
+        "--model", type=str, default="gemma3:1b",
+        help="Ollama model tag (e.g. gemma3:1b, llama3.1:8b, mistral:7b, llama3.2:3b)"
     )
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--seed", type=int, default=42)
@@ -161,3 +161,4 @@ if __name__ == "__main__":
         seed=args.seed,
     )
     print(f"Done. Corpus written to: {out}")
+
