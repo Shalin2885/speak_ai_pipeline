@@ -28,6 +28,7 @@ data/transcripts/**
 data/augmented/**
 data/synthetic/**
 data/manifests/**
+data/whisper_ready/**
 # keep .gitkeep stubs
 !data/**/.gitkeep
 
