@@ -1,0 +1,6 @@
+[submodule "third_party/ems_audio_syn_pipeline"]
+	path = third_party/ems_audio_syn_pipeline
+	url = https://github.com/ChiShengChen/ems_audio_syn_pipeline
+[submodule "third_party/speech-augmentation"]
+	path = third_party/speech-augmentation
+	url = https://github.com/C3Imaging/speech-augmentation

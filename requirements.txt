@@ -1,0 +1,62 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Speak AI Pipeline — Unified Requirements
+# Combines dependencies from both upstream repos plus Speak AI integration code.
+# Install with:  pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Core ML / Audio ──────────────────────────────────────────────────────────
+torch>=2.1.0
+torchaudio>=2.1.0
+transformers>=4.40.0
+datasets>=2.19.0
+accelerate>=0.29.0
+evaluate>=0.4.0
+jiwer>=3.0.0                  # WER computation
+
+# ── Whisper / ASR ────────────────────────────────────────────────────────────
+openai-whisper>=20231117
+whisper-normalizer>=0.0.1
+
+# ── Wav2Vec2 / forced alignment (Repository 2) ───────────────────────────────
+fairseq>=0.12.2; sys_platform != "win32"  # fairseq is Linux/Mac only
+torchaudio>=2.1.0                          # already listed above
+
+# ── TTS engines (Repository 1) ───────────────────────────────────────────────
+TTS>=0.22.0                   # Coqui TTS — includes XTTS v2
+edge-tts>=6.1.9
+bark>=1.0.0; sys_platform != "win32"  # Bark can be tricky on Windows
+
+# ── Audio processing ─────────────────────────────────────────────────────────
+librosa>=0.10.1
+soundfile>=0.12.1
+audioread>=3.0.1
+pydub>=0.25.1
+scipy>=1.11.0
+numpy>=1.24.0
+
+# ── Audio augmentation / CLEESE (Repository 2) ───────────────────────────────
+# CLEESE is bundled in third_party/speech-augmentation; no pip package needed.
+# Audiomentation for additional augmentation:
+audiomentations>=0.34.0
+
+# ── Speaker diarization (Repository 2) ───────────────────────────────────────
+pyannote.audio>=3.1.0
+resemblyzer>=0.1.1.dev0
+nemo_toolkit[asr]>=1.23.0; sys_platform != "win32"
+
+# ── LLM / text generation (Repository 1 — phase1) ────────────────────────────
+openai>=1.23.0
+anthropic>=0.26.0
+
+# ── Utilities ────────────────────────────────────────────────────────────────
+python-dotenv>=1.0.1
+pyyaml>=6.0.1
+tqdm>=4.66.2
+click>=8.1.7
+rich>=13.7.0
+loguru>=0.7.2
+jsonlines>=4.0.0
+
+# ── Testing ───────────────────────────────────────────────────────────────────
+pytest>=8.1.0
+pytest-cov>=5.0.0
