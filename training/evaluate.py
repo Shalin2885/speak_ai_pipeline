@@ -46,17 +46,28 @@ def evaluate_whisper(
     if not script.exists():
         raise FileNotFoundError(f"evaluate_finetuned_whisper.py not found at {script}")
 
-    model_dir = model_path or cfg.whisper_output_dir
-    manifest = test_manifest or (cfg.manifests_dir / "dataset_test.jsonl")
+    if model_path:
+        model_dir = str(model_path)
+    elif cfg.whisper_output_dir.exists() and any(cfg.whisper_output_dir.iterdir()):
+        model_dir = str(cfg.whisper_output_dir)
+    else:
+        model_dir = cfg.whisper_base_model
+
+    test_dataset = test_manifest or Path("data/whisper_ready/test")
+    if not test_dataset.exists():
+        logger.error("Test dataset not found at %s. Please run prepare_dataset.py first.", test_dataset)
+        return 1
+
     report_dir = Path("outputs/reports")
     report_dir.mkdir(parents=True, exist_ok=True)
+    output_csv = report_dir / "eval_results.csv"
 
     cmd = [
         sys.executable,
         str(script),
-        "--model_path", str(model_dir),
-        "--test_manifest", str(manifest),
-        "--output_dir", str(report_dir),
+        "--model_path", model_dir,
+        "--test_dataset_path", str(test_dataset),
+        "--output_csv", str(output_csv),
     ]
 
     logger.info("Running evaluation …")
