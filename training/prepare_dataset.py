@@ -53,8 +53,13 @@ def prepare_for_whisper(
         "--manifest", str(manifest_path),
         "--output_dir", str(output_dir),
     ]
+    import os
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
+
     logger.info("Running: %s", " ".join(cmd))
-    result = subprocess.run(cmd, check=False)
+    result = subprocess.run(cmd, env=env, check=False)
 
     if result.returncode != 0:
         logger.error("prepare_for_whisper.py exited with code %d", result.returncode)

@@ -56,8 +56,9 @@ def train_whisper(config: PipelineConfig | None = None) -> int:
     ]
 
     # Pass HuggingFace token if set
-    import os
     env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
     if cfg.hf_token:
         env["HF_TOKEN"] = cfg.hf_token
 

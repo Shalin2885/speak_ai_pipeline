@@ -61,7 +61,12 @@ def evaluate_whisper(
     logger.info("Running evaluation …")
     logger.info("Command: %s", " ".join(cmd))
 
-    result = subprocess.run(cmd, check=False)
+    import os
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
+
+    result = subprocess.run(cmd, env=env, check=False)
 
     if result.returncode == 0:
         logger.info("Evaluation complete. Reports written to %s", report_dir)

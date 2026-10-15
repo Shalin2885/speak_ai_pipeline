@@ -40,8 +40,10 @@ def _build_entry(audio_path: Path, text: str) -> Optional[dict]:
         logger.warning("Cannot read audio (skipped): %s", audio_path)
         return None
     return {
+        "audio": str(audio_path.resolve()),
         "audio_filepath": str(audio_path.resolve()),
         "text": text.strip(),
+        "transcript": text.strip(),
         "duration": round(duration, 3),
     }
 
