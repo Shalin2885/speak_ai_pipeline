@@ -43,14 +43,21 @@ def train_whisper(config: PipelineConfig | None = None) -> int:
     train_manifest = cfg.manifests_dir / "dataset_train.jsonl"
     val_manifest = cfg.manifests_dir / "dataset_val.jsonl"
 
+    dataset_path = Path("data/whisper_ready")
+    if not dataset_path.exists():
+        logger.info("Prepared dataset not found at %s. Running prepare_dataset first...", dataset_path)
+        from training.prepare_dataset import prepare_for_whisper
+        rc = prepare_for_whisper(train_manifest, dataset_path, config=cfg)
+        if rc != 0:
+            logger.error("Dataset preparation failed.")
+            return rc
+
     cmd = [
         sys.executable,
         str(script),
-        "--model_name_or_path", cfg.whisper_base_model,
-        "--train_manifest", str(train_manifest),
-        "--val_manifest", str(val_manifest),
+        "--model_name", cfg.whisper_base_model,
+        "--dataset_path", str(dataset_path),
         "--output_dir", str(cfg.whisper_output_dir),
-        "--max_steps", str(cfg.whisper_max_steps),
         "--per_device_train_batch_size", str(cfg.whisper_batch_size),
         "--learning_rate", str(cfg.whisper_learning_rate),
     ]

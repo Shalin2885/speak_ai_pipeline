@@ -17,6 +17,8 @@ datasets>=2.19.0
 accelerate>=0.29.0
 evaluate>=0.4.0
 jiwer>=3.0.0                   # WER / CER computation
+peft>=0.7.0                    # LoRA / PEFT fine-tuning
+tensorboard
 
 # ── Whisper ASR (primary transcription backend) ───────────────────────────────
 openai-whisper>=20231117
