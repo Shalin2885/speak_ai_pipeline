@@ -219,3 +219,4 @@ def _quarantine(
             shutil.move(str(audio_path), str(quarantine_dir / audio_path.name))
         except Exception as exc:
             logger.warning("Could not quarantine audio %s: %s", audio_path, exc)
+

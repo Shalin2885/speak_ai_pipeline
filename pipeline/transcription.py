@@ -230,3 +230,4 @@ def transcribe_directory(
 
     logger.info("Transcribed %d / %d files.", len(results), len(files))
     return results
+

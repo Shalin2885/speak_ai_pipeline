@@ -176,3 +176,4 @@ def synthesise_from_manifest(
     texts = [e[text_key] for e in entries if text_key in e]
     logger.info("Synthesising %d utterances from %s …", len(texts), manifest_path.name)
     return synthesise_with_orchestrator(texts, output_dir, ems_root, engine=engine, **engine_kwargs)
+

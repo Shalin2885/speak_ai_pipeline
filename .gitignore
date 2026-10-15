@@ -61,3 +61,4 @@ Thumbs.db
 
 # ── Third-party repos are tracked via git submodule / sparse checkout ─────────
 # third_party/ is intentionally included (external repos kept read-only)
+

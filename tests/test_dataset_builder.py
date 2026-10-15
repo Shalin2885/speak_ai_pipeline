@@ -178,3 +178,4 @@ class TestSplitManifest:
         splits_b = split_manifest(sample_manifest, tmp_path / "b", seed=99)
         # Very unlikely to be identical for 10 entries with different seeds
         assert splits_a["train"].read_text() != splits_b["train"].read_text()
+

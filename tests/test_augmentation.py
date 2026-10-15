@@ -27,7 +27,9 @@ def sine_wav(tmp_path: Path) -> Path:
     """440 Hz tone, 1 second, 16 kHz mono."""
     t = np.linspace(0, 1, 16_000, endpoint=False, dtype=np.float32)
     audio = 0.5 * np.sin(2 * np.pi * 440 * t)
-    wav_path = tmp_path / "tone.wav"
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir(exist_ok=True)
+    wav_path = audio_dir / "tone.wav"
     sf.write(str(wav_path), audio, 16_000)
     return wav_path
 
@@ -36,7 +38,9 @@ def sine_wav(tmp_path: Path) -> Path:
 def noise_wav(tmp_path: Path) -> Path:
     """White noise, 2 seconds."""
     noise = np.random.default_rng(0).standard_normal(32_000).astype(np.float32) * 0.05
-    wav_path = tmp_path / "noise.wav"
+    noise_dir = tmp_path / "noise"
+    noise_dir.mkdir(exist_ok=True)
+    wav_path = noise_dir / "noise.wav"
     sf.write(str(wav_path), noise, 16_000)
     return wav_path
 
@@ -134,3 +138,4 @@ class TestAugmentDirectory:
         out_dir = tmp_path / "out"
         results = augment_directory(empty_dir, out_dir, use_audiomentations=False)
         assert results == []
+

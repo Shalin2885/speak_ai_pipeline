@@ -140,3 +140,4 @@ def preprocess_directory(
 
     logger.info("Preprocessed %d / %d files.", len(results), len(files))
     return results
+

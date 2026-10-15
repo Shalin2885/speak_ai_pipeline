@@ -57,8 +57,34 @@ python -m venv .venv
 # macOS/Linux
 source .venv/bin/activate
 
+# Core deps (always needed — no conflict risk):
 pip install -r requirements.txt
+
+# + Coqui TTS / XTTS v2 (pulls in gruut, needs jsonlines unpinned):
+pip install -r requirements-tts.txt
+
+# + Wav2Vec2 forced alignment (Linux / Mac only):
+pip install -r requirements-asr.txt
+
+# + Speaker diarization (GPU recommended):
+pip install -r requirements-diarize.txt
 ```
+
+> **Why split?** `TTS>=0.22.0` pulls in `gruut==2.2.3` which requires
+> `jsonlines~=1.2.0`. Keeping TTS in its own file prevents that constraint
+> from blocking the core install on Windows.
+
+> [!IMPORTANT]
+> **Windows — Coqui TTS requires Microsoft C++ Build Tools.**
+> Coqui TTS compiles a Cython C extension (`monotonic_align.core`) at install
+> time. Before running `pip install -r requirements-tts.txt` on Windows you
+> must first install [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+> (choose "Desktop development with C++", ~6 GB download).
+>
+> **You do NOT need Coqui TTS for the default pipeline.** Edge TTS
+> (already in `requirements.txt`) handles synthesis with no compilation, no
+> GPU, and no API key. Only install `requirements-tts.txt` if you specifically
+> need **XTTS v2 voice cloning**.
 
 ### 2. Configure
 
@@ -164,3 +190,4 @@ Tests are fully mocked — no GPU, no API keys, no large models needed.
 - **speech-augmentation**: see [`third_party/speech-augmentation/README.md`](third_party/speech-augmentation/README.md)
 
 The Speak AI integration layer (`pipeline/`, `training/`, `tests/`) is © Speak AI.
+

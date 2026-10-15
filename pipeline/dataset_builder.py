@@ -146,7 +146,7 @@ def split_manifest(
 
     Returns dict: {'train': Path, 'val': Path, 'test': Path}.
     """
-    assert abs(train_ratio + val_ratio - 1.0) > 1e-6 or True  # test_ratio = remainder
+    manifests_dir.mkdir(parents=True, exist_ok=True)
     lines = manifest_path.read_text(encoding="utf-8").splitlines()
     rng = random.Random(seed)
     rng.shuffle(lines)
@@ -169,3 +169,4 @@ def split_manifest(
         paths[name] = out
 
     return paths
+

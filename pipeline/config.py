@@ -121,3 +121,4 @@ class PipelineConfig:
         ):
             path: Path = getattr(self, attr)
             path.mkdir(parents=True, exist_ok=True)
+

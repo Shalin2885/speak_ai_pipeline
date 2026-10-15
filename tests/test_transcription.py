@@ -131,3 +131,4 @@ class TestTranscribeDirectory:
         out_dir = tmp_path / "out"
         results = transcribe_directory(tmp_path, out_dir)
         assert results == []
+
