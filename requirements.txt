@@ -36,9 +36,10 @@ numpy>=1.24.0
 # ── Audio augmentation ────────────────────────────────────────────────────────
 audiomentations>=0.34.0
 
-# ── LLM / text generation (phase1 corpus generation) ─────────────────────────
-openai>=1.23.0
-anthropic>=0.26.0
+# ── LLM / text generation — FREE local inference via Ollama ──────────────────
+# No API key needed. Install Ollama from https://ollama.com/download
+# then: ollama pull llama3.1:8b
+ollama>=0.6.0
 
 # ── Utilities ────────────────────────────────────────────────────────────────
 python-dotenv>=1.0.1

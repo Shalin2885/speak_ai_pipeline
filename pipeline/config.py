@@ -96,14 +96,13 @@ class PipelineConfig:
     seed: int = field(default_factory=lambda: _env_int("SEED", 42))
     log_level: str = field(default_factory=lambda: _env("LOG_LEVEL", "INFO"))
 
-    # ── API keys (read at runtime; never stored in logs) ─────────────────────
-    @property
-    def openai_api_key(self) -> str:
-        return os.environ.get("OPENAI_API_KEY", "")
-
-    @property
-    def anthropic_api_key(self) -> str:
-        return os.environ.get("ANTHROPIC_API_KEY", "")
+    # ── Ollama (FREE local LLM — no API key needed) ──────────────────────────
+    ollama_host: str = field(
+        default_factory=lambda: _env("OLLAMA_HOST", "http://localhost:11434")
+    )
+    ollama_model: str = field(
+        default_factory=lambda: _env("OLLAMA_MODEL", "llama3.1:8b")
+    )
 
     @property
     def hf_token(self) -> str:
