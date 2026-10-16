@@ -7,6 +7,7 @@ An end-to-end speech data preparation and Whisper fine-tuning pipeline that inte
 - **Speak AI integration layer** (`pipeline/`, `training/`, `tests/`): adapters, orchestrator, transcript validation, dataset builder, and training wrappers.
 
 ---
+<img width="1910" height="826" alt="image" src="https://github.com/user-attachments/assets/91c19f99-99f2-4132-b0a7-77c56a6012ac" />
 
 ## Project Structure
 
