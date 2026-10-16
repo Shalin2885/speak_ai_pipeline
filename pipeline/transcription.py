@@ -18,7 +18,7 @@ import logging
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -81,17 +81,27 @@ def _transcribe_openai_whisper(
     if language:
         kwargs["language"] = language
 
-    result = model.transcribe(audio, **kwargs)
+    result: dict[str, Any] = model.transcribe(audio, **kwargs)
     text = str(result.get("text", "")).strip()
-    lang = result.get("language")
+    raw_lang = result.get("language")
+    lang: Optional[str] = str(raw_lang) if raw_lang is not None else None
 
     timings: list[WordTiming] = []
-    if word_timestamps and "segments" in result:
-        for seg in result.get("segments", []):
-            for w in seg.get("words", []):
-                timings.append(
-                    WordTiming(word=str(w.get("word", "")).strip(), start=float(w.get("start", 0.0)), end=float(w.get("end", 0.0)))
-                )
+    segments = result.get("segments")
+    if word_timestamps and isinstance(segments, list):
+        for seg in segments:
+            if isinstance(seg, dict):
+                words = seg.get("words")
+                if isinstance(words, list):
+                    for w in words:
+                        if isinstance(w, dict):
+                            timings.append(
+                                WordTiming(
+                                    word=str(w.get("word", "")).strip(),
+                                    start=float(w.get("start", 0.0)),
+                                    end=float(w.get("end", 0.0)),
+                                )
+                            )
 
     return TranscriptionResult(
         audio_path=audio_path,
