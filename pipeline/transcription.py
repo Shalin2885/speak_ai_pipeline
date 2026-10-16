@@ -66,6 +66,21 @@ def _transcribe_openai_whisper(
         import librosa
         audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
 
+    # Map HuggingFace style names (e.g., "openai/whisper-tiny") to whisper model names (e.g., "tiny")
+    clean_model_name = model_name
+    if clean_model_name.startswith("openai/whisper-"):
+        clean_model_name = clean_model_name.replace("openai/whisper-", "")
+    elif "/" in clean_model_name:
+        clean_model_name = clean_model_name.split("/")[-1].replace("whisper-", "")
+
+    model = whisper.load_model(clean_model_name)
+    kwargs: dict = {"word_timestamps": word_timestamps}
+    import torch
+    if not torch.cuda.is_available():
+        kwargs["fp16"] = False
+    if language:
+        kwargs["language"] = language
+
     result = model.transcribe(audio, **kwargs)
     text = result["text"].strip()
     lang = result.get("language")
@@ -91,9 +106,20 @@ def _transcribe_openai_whisper(
 
 def _transcribe_hf_whisper(
     audio_path: Path,
-    model_name: str = "openai/whisper-small",
+    model_name: str = "openai/whisper-tiny",
 ) -> TranscriptionResult:
     from transformers import pipeline as hf_pipeline  # type: ignore
+    import soundfile as sf
+    import numpy as np
+
+    # Pre-load audio to avoid requiring system ffmpeg
+    audio, sr = sf.read(str(audio_path), dtype="float32")
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    if sr != 16000:
+        import librosa
+        audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
+        sr = 16000
 
     pipe = hf_pipeline(
         "automatic-speech-recognition",
@@ -101,7 +127,7 @@ def _transcribe_hf_whisper(
         return_timestamps="word",
         chunk_length_s=30,
     )
-    result = pipe(str(audio_path))
+    result = pipe({"array": audio, "sampling_rate": sr})
     text = result["text"].strip()
 
     timings: list[WordTiming] = []
@@ -147,7 +173,7 @@ BACKENDS = ("openai-whisper", "hf-whisper", "wav2vec2")
 
 
 def transcribe(
-    audio_path: Path,
+    audio_path: Path | str,
     backend: str = "openai-whisper",
     model_name: Optional[str] = None,
     speech_aug_root: Optional[Path] = None,
@@ -159,13 +185,14 @@ def transcribe(
 
     Parameters
     ----------
-    audio_path:       Path to a 16 kHz mono WAV file.
+    audio_path:       Path or str to a 16 kHz mono WAV file.
     backend:          One of 'openai-whisper', 'hf-whisper', 'wav2vec2'.
     model_name:       Model identifier (backend-specific default used if None).
     speech_aug_root:  Root of Repository 2 — required for wav2vec2 backend.
     language:         ISO 639-1 language code hint (whisper backends only).
     word_timestamps:  Request per-word timestamps where supported.
     """
+    audio_path = Path(audio_path)
     if backend == "openai-whisper":
         return _transcribe_openai_whisper(
             audio_path,
@@ -235,4 +262,43 @@ def transcribe_directory(
 
     logger.info("Transcribed %d / %d files.", len(results), len(files))
     return results
+
+
+def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Transcribe audio using Whisper or Wav2Vec2.")
+    parser.add_argument("audio", nargs="?", default=None, help="Path to single audio file.")
+    parser.add_argument("--input_dir", type=Path, default=None, help="Directory of audio files.")
+    parser.add_argument("--output_dir", type=Path, default=Path("data/transcripts"), help="Output directory.")
+    parser.add_argument("--backend", default="openai-whisper", choices=BACKENDS, help="ASR backend.")
+    parser.add_argument("--model", default="tiny", help="Whisper model name (e.g. tiny, base, small).")
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+
+    if args.audio:
+        res = transcribe(args.audio, backend=args.backend, model_name=args.model)
+        print("\n--- Transcription ---")
+        print(f"Backend: {res.backend}")
+        print(f"Text:    {res.text}")
+        if res.word_timings:
+            print(f"Words:   {len(res.word_timings)} words with timestamps.")
+    elif args.input_dir:
+        results = transcribe_directory(args.input_dir, args.output_dir, backend=args.backend, model_name=args.model)
+        print(f"Transcribed {len(results)} files to {args.output_dir}")
+    else:
+        # Default test run on synth_00000.wav if present
+        sample = Path("data/synthetic/synth_00000.wav")
+        if sample.exists():
+            print(f"Transcribing sample audio: {sample}")
+            res = transcribe(sample, backend=args.backend, model_name=args.model)
+            print("\n--- Transcription ---")
+            print(f"Text: {res.text}")
+        else:
+            parser.print_help()
+
+
+if __name__ == "__main__":
+    main()
 
