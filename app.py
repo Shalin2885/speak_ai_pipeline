@@ -227,19 +227,14 @@ with tab_llm:
         st.subheader("Generated Output")
         if generate_btn:
             with st.spinner("Generating EMS scenarios via Gemma3:1b..."):
-                from pipeline.llm_client import OllamaClient
-                from pipeline.llm_corpus_generator import EMS_SYSTEM_PROMPT
+                from pipeline.llm_client import generate_ems_text
 
-                client = OllamaClient(model="gemma3:1b")
                 results = []
-
-                prompt = custom_prompt if scenario_type == "Custom Scenario Prompt" else f"Generate realistic EMS 911 dispatch radio call script for: {scenario_type}."
+                base_prompt = custom_prompt if scenario_type == "Custom Scenario Prompt" else f"Generate realistic EMS 911 dispatch radio call script for: {scenario_type}."
 
                 for i in range(num_scenarios):
-                    text = client.generate_text(
-                        system_prompt=EMS_SYSTEM_PROMPT,
-                        user_prompt=prompt + f" Include unit callsign, patient age/vitals, and ETA. Variation {i+1}."
-                    )
+                    user_prompt = f"{base_prompt} Include unit callsign, patient age/vitals, and ETA. Variation {i+1}."
+                    text = generate_ems_text(user_prompt, model="gemma3:1b")
                     results.append(text.strip())
 
                 for idx, res in enumerate(results, 1):
@@ -463,3 +458,4 @@ with tab_pipeline:
                     st.success("Fine-tuning completed successfully! Model weights saved.")
                 else:
                     st.error(f"Training exited with code {rc}.")
+
