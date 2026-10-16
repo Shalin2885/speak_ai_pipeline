@@ -24,6 +24,8 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
+from .llm_client import EMS_SYSTEM_PROMPT
+
 
 def _add_ems_to_path(ems_root: Path) -> None:
     root_str = str(ems_root)

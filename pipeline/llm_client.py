@@ -60,3 +60,28 @@ def generate_ems_text(prompt: str, model: str | None = None) -> str:
     )
     return response["message"]["content"]
 
+
+EMS_SYSTEM_PROMPT = _SYSTEM_PROMPT
+
+
+class OllamaClient:
+    """Convenience client wrapper around Ollama."""
+
+    def __init__(self, model: str | None = None) -> None:
+        self.model = model or MODEL
+
+    def generate_text(self, user_prompt: str, system_prompt: str | None = None) -> str:
+        _sys = system_prompt or _SYSTEM_PROMPT
+        response = ollama.chat(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": _sys},
+                {"role": "user", "content": user_prompt},
+            ],
+            options={
+                "temperature": 0.2,
+                "num_predict": 512,
+            },
+        )
+        return response["message"]["content"]
+

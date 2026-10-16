@@ -153,7 +153,7 @@ with tab_asr:
         word_ts = st.checkbox("Generate Word-Level Timestamps", value=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("🚀 Transcribe Audio", type="primary", use_container_width=True):
+        if st.button("🚀 Transcribe Audio", type="primary", width="stretch"):
             if not selected_audio_path:
                 st.error("Please select or upload an audio file first.")
             else:
@@ -184,7 +184,7 @@ with tab_asr:
                                 {"Word": w.word, "Start (s)": round(w.start, 2), "End (s)": round(w.end, 2), "Duration (s)": round(w.end - w.start, 2)}
                                 for w in res.word_timings
                             ])
-                            st.dataframe(df_timings, use_container_width=True, height=220)
+                            st.dataframe(df_timings, width="stretch", height=220)
 
                     except Exception as exc:
                         st.error(f"Transcription failed: {exc}")
@@ -358,7 +358,7 @@ with tab_data:
 
         if records:
             df = pd.DataFrame(records)
-            st.dataframe(df[["audio", "text"] if "text" in df.columns else df.columns], use_container_width=True, height=350)
+            st.dataframe(df[["audio", "text"] if "text" in df.columns else df.columns], width="stretch", height=350)
     else:
         st.info(f"Manifest `{chosen_file}` not found.")
 
@@ -379,7 +379,7 @@ with tab_eval:
 
         with col_e2:
             st.markdown("#### Sample Predictions Comparison")
-            st.dataframe(df_eval, use_container_width=True, height=280)
+            st.dataframe(df_eval, width="stretch", height=280)
 
         st.markdown("---")
         st.subheader("Detailed Sample Breakdown")
