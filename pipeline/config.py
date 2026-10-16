@@ -73,16 +73,22 @@ class PipelineConfig:
 
     # ── Model settings ───────────────────────────────────────────────────────
     whisper_base_model: str = field(
-        default_factory=lambda: _env("WHISPER_BASE_MODEL", "openai/whisper-small")
+        default_factory=lambda: _env("WHISPER_BASE_MODEL", "openai/whisper-tiny")
     )
     whisper_max_steps: int = field(
         default_factory=lambda: _env_int("WHISPER_MAX_STEPS", 2000)
     )
     whisper_batch_size: int = field(
-        default_factory=lambda: _env_int("WHISPER_BATCH_SIZE", 16)
+        default_factory=lambda: _env_int("WHISPER_BATCH_SIZE", 4)
     )
     whisper_learning_rate: float = field(
-        default_factory=lambda: _env_float("WHISPER_LEARNING_RATE", 1e-5)
+        default_factory=lambda: _env_float("WHISPER_LEARNING_RATE", 1e-4)
+    )
+    whisper_num_epochs: int = field(
+        default_factory=lambda: _env_int("WHISPER_NUM_EPOCHS", 3)
+    )
+    whisper_cpu_threads: int = field(
+        default_factory=lambda: _env_int("WHISPER_CPU_THREADS", 2)
     )
     xtts_model_path: str = field(
         default_factory=lambda: _env("XTTS_MODEL_PATH", "./hf_cache/xtts_v2")

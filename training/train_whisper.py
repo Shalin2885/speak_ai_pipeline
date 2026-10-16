@@ -60,17 +60,25 @@ def train_whisper(config: PipelineConfig | None = None) -> int:
         "--dataset_path", str(dataset_path),
         "--output_dir", str(cfg.whisper_output_dir),
         "--per_device_train_batch_size", str(cfg.whisper_batch_size),
+        "--per_device_eval_batch_size", str(cfg.whisper_batch_size),
         "--learning_rate", str(cfg.whisper_learning_rate),
+        "--num_train_epochs", str(getattr(cfg, "whisper_num_epochs", 3)),
     ]
 
-    # Pass HuggingFace token if set
+    # Pass HuggingFace token and enforce CPU thread limits to prevent overheating
     env = os.environ.copy()
     env["PYTHONIOENCODING"] = "utf-8"
     env["PYTHONUTF8"] = "1"
+    threads = str(getattr(cfg, "whisper_cpu_threads", 2))
+    env["OMP_NUM_THREADS"] = threads
+    env["MKL_NUM_THREADS"] = threads
+    env["TORCH_NUM_THREADS"] = threads
     if cfg.hf_token:
         env["HF_TOKEN"] = cfg.hf_token
 
     logger.info("Starting Whisper fine-tuning …")
+    logger.info("Base model: %s | CPU threads capped to: %s | Epochs: %s | Batch size: %s",
+                cfg.whisper_base_model, threads, getattr(cfg, "whisper_num_epochs", 3), cfg.whisper_batch_size)
     logger.info("Command: %s", " ".join(cmd))
 
     result = subprocess.run(cmd, env=env, check=False)
@@ -86,7 +94,9 @@ def train_whisper(config: PipelineConfig | None = None) -> int:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Fine-tune Whisper on the Speak AI dataset.")
     parser.add_argument("--model", default=None, help="Override WHISPER_BASE_MODEL env var.")
-    parser.add_argument("--max_steps", type=int, default=None, help="Override WHISPER_MAX_STEPS.")
+    parser.add_argument("--epochs", type=int, default=None, help="Override WHISPER_NUM_EPOCHS.")
+    parser.add_argument("--batch_size", type=int, default=None, help="Override WHISPER_BATCH_SIZE.")
+    parser.add_argument("--threads", type=int, default=None, help="Override CPU threads (default 2).")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -94,8 +104,12 @@ def main() -> None:
     cfg = PipelineConfig()
     if args.model:
         cfg.whisper_base_model = args.model
-    if args.max_steps:
-        cfg.whisper_max_steps = args.max_steps
+    if args.epochs:
+        cfg.whisper_num_epochs = args.epochs
+    if args.batch_size:
+        cfg.whisper_batch_size = args.batch_size
+    if args.threads:
+        cfg.whisper_cpu_threads = args.threads
 
     rc = train_whisper(cfg)
     sys.exit(rc)
