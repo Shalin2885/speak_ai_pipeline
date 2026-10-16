@@ -1,4 +1,4 @@
-<img width="1910" height="826" alt="image" src="https://github.com/user-attachments/assets/732b4c6f-903a-4dab-a462-c4b5358a999e" /># Speak AI Pipeline
+# Speak AI Pipeline
 
 An end-to-end speech data preparation and Whisper fine-tuning pipeline that integrates:
 
