@@ -131,9 +131,14 @@ def _transcribe_hf_whisper(
         audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
         sr = 16000
 
+    # Map short model names (e.g. 'base', 'tiny') to HuggingFace repo ids (e.g. 'openai/whisper-base')
+    hf_model_name = model_name
+    if not hf_model_name.startswith("openai/whisper-") and "/" not in hf_model_name:
+        hf_model_name = f"openai/whisper-{hf_model_name}"
+
     pipe = hf_pipeline(
         "automatic-speech-recognition",
-        model=model_name,
+        model=hf_model_name,
         return_timestamps="word",
         chunk_length_s=30,
     )
