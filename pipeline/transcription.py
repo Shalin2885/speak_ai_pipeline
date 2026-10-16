@@ -82,15 +82,15 @@ def _transcribe_openai_whisper(
         kwargs["language"] = language
 
     result = model.transcribe(audio, **kwargs)
-    text = result["text"].strip()
+    text = str(result.get("text", "")).strip()
     lang = result.get("language")
 
     timings: list[WordTiming] = []
     if word_timestamps and "segments" in result:
-        for seg in result["segments"]:
+        for seg in result.get("segments", []):
             for w in seg.get("words", []):
                 timings.append(
-                    WordTiming(word=w["word"].strip(), start=w["start"], end=w["end"])
+                    WordTiming(word=str(w.get("word", "")).strip(), start=float(w.get("start", 0.0)), end=float(w.get("end", 0.0)))
                 )
 
     return TranscriptionResult(
@@ -128,13 +128,14 @@ def _transcribe_hf_whisper(
         chunk_length_s=30,
     )
     result = pipe({"array": audio, "sampling_rate": sr})
-    text = result["text"].strip()
+    text = str(result.get("text", "")).strip() if isinstance(result, dict) else str(result).strip()
 
     timings: list[WordTiming] = []
-    for chunk in result.get("chunks", []):
-        ts = chunk.get("timestamp", (None, None))
-        if ts[0] is not None:
-            timings.append(WordTiming(word=chunk["text"].strip(), start=ts[0], end=ts[1] or ts[0]))
+    if isinstance(result, dict):
+        for chunk in result.get("chunks", []):
+            ts = chunk.get("timestamp", (None, None))
+            if ts[0] is not None:
+                timings.append(WordTiming(word=str(chunk.get("text", "")).strip(), start=float(ts[0]), end=float(ts[1] or ts[0])))
 
     return TranscriptionResult(
         audio_path=audio_path,
