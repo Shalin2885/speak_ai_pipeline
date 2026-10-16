@@ -56,12 +56,17 @@ def _transcribe_openai_whisper(
 ) -> TranscriptionResult:
     import whisper  # type: ignore
 
-    model = whisper.load_model(model_name)
-    kwargs: dict = {"word_timestamps": word_timestamps}
-    if language:
-        kwargs["language"] = language
+    import soundfile as sf
+    import numpy as np
 
-    result = model.transcribe(str(audio_path), **kwargs)
+    audio, sr = sf.read(str(audio_path), dtype="float32")
+    if audio.ndim > 1:
+        audio = audio.mean(axis=1)
+    if sr != 16000:
+        import librosa
+        audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
+
+    result = model.transcribe(audio, **kwargs)
     text = result["text"].strip()
     lang = result.get("language")
 
